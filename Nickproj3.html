@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<link href='https://fonts.googleapis.com/css?family=Londrina+Shadow' rel='stylesheet' type='text/css'>
+<style>
+body {
+  font-family: helvetica, sans-serif;
+  margin: 0 auto;
+  max-width: 600px;
+  background: #232323;
+}
+div {
+  height: 200px;
+  background-size: cover;
+  position: relative;
+  margin: 40px 0 0 0;
+  border-radius: 12px;
+}
+h1 {
+  font-family: 'Londrina Shadow', cursive;
+  text-align: center;
+  font-size: 75px;
+  color: #aaaaaa;
+  margin: 60px 0 0 0;
+}
+h2 {
+  text-align: center;
+  color: #bbbbbb;
+  margin: 0px 0 70px 0;
+}
+p {
+  color: rgba(255,255,255,1);
+  background: black;
+  background: linear-gradient(bottom, rgba(0,0,0,1), rgba(0,0,0,.4));
+  background: -webkit-linear-gradient(bottom, rgba(0,0,0,1), rgba(0,0,0,.4));
+  background: -moz-linear-gradient(bottom, rgba(0,0,0,1), rgba(0,0,0,.4));
+  padding: 10px;
+  line-height: 28px;
+  text-align: justify;
+  position: absolute;
+  bottom: 0;
+  margin: 0;
+  height: 30px;
+  transition: height .5s;
+  -webkit-transition: height .5s;
+  -moz-transition: height .5s;
+}
+
+small {
+  opacity: 0;
+}
+
+.show-description p {
+  height: 150px;
+}
+
+.show-description small {
+  opacity: 1;
+}
+
+.first{
+  background-image: url("https://media-cldnry.s-nbcnews.com/image/upload/newscms/2022_19/1869653/jerk-chicken-kb-2x1-220510.jpg");
+}
+.second{
+  background-image: url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBg8dkmPP2_FXB5K1h9IiyszkjZ_rOIWnSGA&usqp=CAU");
+}
+.dessert{
+  background-image: url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCZJEe3VDLjVY0eSwLBpWqi6eQAa51pqzoDw&usqp=CAU");
+}
+.price {
+  float: right;
+}
+@media (max-width: 500px) {
+  h1 {
+    font-size: 50px;
+    margin-top: 20px;
+    line-height: 40px;
+  }
+  h2 {
+    font-size: 20px;
+    margin: 20px 0 30px 0;
+  }
+  div {
+    margin: 20px 12px 0 12px;
+  }
+  p {
+    font-size: 20px;
+    line-height: 24px;
+  }
+  small {
+    font-size: 16px;
+  }
+  input {
+  	font-size: 22px;
+  }
+  input {
+  	font-size: 22px;
+  }
+
+  
+}
+
+</style>
+
+</head>
+
+<body>
+<h1>A Taste Of The Carribean</h1>
+<h2>A Jamaican Inspired Restaraunt</h2>
+<div class="first">
+	<input class="quantities" type="number" min="0" style="width: 50px">
+  <p>Jerked Chicken <span class="price">$12</span><br />
+  <small>Tender and juicy jerk chicken destines to take you on an adventure of flavor.Can be eaten alone or with festivals. </small></p>
+  
+</div>
+
+<div class="second">
+	<input class="quantities" type="number" min="0" style="width: 50px">
+  <p>Oxtail <span class="price">$23</span><br />
+  <small>Brown stewed,tender and succulent oxtail that falls of the bone served with a side of rise and peas.</small></p>
+  
+</div>
+  
+  
+<div class="dessert">
+	<input class="quantities" type="number" min="0" style="width: 50px">
+  <p>Carrot Cake <span class="price">$5</span><br />
+  <small>Moist Freshly Baked Carrot Cake which made with quality to satisfy ones tastebuds.</small></p>
+
+</div>
+
+
+  <br><br>
+  <input id="Name" placeholder="Your Name">
+  <input type="Email" id="Email" placeholder="Your Email">
+  <input type="submit" id="submit">
+  <br><br>  
+  
+
+
+
+
+
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-app.js";
+  import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-database.js";
+  
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyCssEEzujuZF64LonXFacduWbRGt5BVN3U",
+    authDomain: "nick-project-3.firebaseapp.com",
+    projectId: "nick-project-3",
+    storageBucket: "nick-project-3.appspot.com",
+    messagingSenderId: "304721832261",
+	  
+    appId: "1:304721832261:web:5c8c1f04f9c79d1d71b62c"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app); 
+  const Name = document.querySelector("#Name") 
+  const Email = document.querySelector("#Email")
+  document.querySelector('#submit').addEventListener('click', Submit)
+  const quantities = document.querySelectorAll(".quantities") 
+  const prices = document.querySelectorAll(".price") 
+  const itemsList = ["JerkedChicken", "Oxtail", "Carrot Cake"]
+  
+
+
+
+
+function Submit() {
+	  const timestamp = buildTimestamp()
+  let total= 0
+  let cart = { }
+  for  (let i=0; i<quantities.length; i=i+1) {
+  if (quantities[i].value != "0" && quantities[i].value != "") {	
+
+  cart[itemsList[i]] = parseInt(quantities[i].value) 
+  let price = prices[i].innerHTML.replace('$', '')
+  total = total + quantities[i].value * price 
+  	}
+  	quantities[i].value = ""
+  }
+      
+	  set(ref(db, timestamp), {
+		  Name: Name.value,
+	      email: Email.value,
+		  cart: cart,
+		  
+       totalPrice: total,
+		paid: "not yet",
+
+		  
+		  
+	  });
+
+	  Name.value = ""
+	  Email.value = ""
+	}
+
+	function buildTimestamp() {
+		  const now = new Date();
+		  let timestamp = now.getFullYear().toString() + "/";
+		  //const month = now.toLocaleString('default', { month: 'long' });
+
+		  let month = now.getMonth()+1   //add 1 because Javascript uses 0 for January
+		  month = month.toString()
+		  month = addLeadingZero(month)
+		  timestamp += month + "/"; 
+
+		  let date = now.getDate().toString()
+		  date = addLeadingZero(date)
+		  timestamp += date + "/";
+
+		  let hours = now.getHours().toString()
+		  hours = addLeadingZero(hours)
+		  timestamp += hours + ":";
+
+		  let minutes = now.getMinutes().toString()
+		  minutes = addLeadingZero(minutes)
+		  timestamp += minutes + ":";
+
+		  let seconds = now.getSeconds().toString()
+		  seconds = addLeadingZero(seconds)
+		  timestamp += seconds;
+
+		  return timestamp
+		}
+
+		function addLeadingZero(units) {
+			if (units.length < 2) {
+				units = "0" + units
+			}
+			return units
+		}
+
+
+
+  
+</script>
+
+</body>
